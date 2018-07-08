@@ -1,3 +1,3 @@
 # watch the org file for file change and compile it to html, tex and pdf
-
-ls *.org | entr bash org_compile.sh 
+# require nodemon to be install globally
+nodemon -w ml-notes.org --exec bash org_compile.sh

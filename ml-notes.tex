@@ -33,433 +33,19 @@
 \tableofcontents
 
 
-\section{Logistic Regression}
-\label{sec:org920332c}
-\subsection{Three linear models}
-\label{sec:org347594c}
-\begin{enumerate}
-\item linear classification(perceptron): \(h(x)=sign(s)\) 
-\begin{itemize}
-\item output is 1 or 0
-\end{itemize}
-\item linear regression: \(h(x)=s\) 
-\begin{itemize}
-\item output is linear transformation
-\end{itemize}
-\item logistic regression: \(h(x)= \theta(s)\)
-\begin{itemize}
-\item output is a probability given by a sigmoid function
-\end{itemize}
-\end{enumerate}
-where \(s=\sum_{i=0}^{d}w_{i}x_{i}\) 
-
-\subsection{Sigmoid function}
-\label{sec:org3689c99}
-also known as the sigmoid or logistic function 
-$$
-\sigma(w^Tx) = \frac{1}{1+e^{-w^T x}} 
-$$
-
-\subsection{Logistic Regression Function}
-\label{sec:org81d0854}
-The logistic regression model specifies the probability of a binary output \(y_i \in \{0,1\}\) given the input \(x_i\) as follows:
-$$
-\left.\begin{aligned} p ( \mathbf { y } | \mathbf { X } ,\theta ) & = \prod _ { i = 1} ^ { n } \operatorname{Ber} \left( y _ { i } | \operatorname{sigm} \left( \mathbf { x } _ { i } \theta \right) \right) \\ & = \prod _ { i = 1} ^ { n } \left[ \frac { 1} { 1+ e ^ { - x _ { i } \theta } } \right] ^ { y _ { i } } \left[ 1- \frac { 1} { 1+ e ^ { - x _ { i } \theta } } \right] ^ { 1- y _ { i } } \end{aligned} \right.
-$$
-where \(x _ { i } \theta = \theta _ { 0} + \sum _ { j = 1} ^ { d } \theta _ { j } x _ { i j }\)
-
-\subsection{Error measure(Cross-entropy Error)}
-\label{sec:org999da21}
-Based on \textbf{\textbf{Likelihood}}: if hypothesis h = f, how likely to get y from x.
-Given a set of training data points \$(x\_i, y\_i), i = 1,\ldots{},n,\$ where \(y_i \in \{0, 1\}\).
-We need to find a weight vector w s.t. the probability of the correct \(y_i \text{ for } x_i\) is high for \(i=1,...n\)
-$$
-max P(y=y_i|x_i; w)
-$$ (maxmize the log likelihood)
-Equiv to  
-$$
-min -\sum_{i=1}^n log P(y=y_i|x_i; w) 
-$$ (minimize the negative log likelihood)
-
-\subsection{Gradient Descent}
-\label{sec:orgbdb97c4}
-Compared to linear regression, logistic regression does not have a closed-form solution, instead of a \textbf{\textbf{iterative solution}} is used, which is called \textbf{\textbf{gradient descent}} 
-\begin{enumerate}
-\item Start at w(0)
-\item Takes a step along the steepest slope
-\item Takes a step toward that direction
-\item Repeat until no local improvement is possible
-\end{enumerate}
-
-\subsection{Algorithm}
-\label{sec:org4411559}
-This is the algorithm for batch learning of logistic regression. It is very similar to linear classification's algorithm (perceptron). Both learns a linear decision boundary.
-\begin{algorithmic}
-\State Given: $(x_i, y_i), i = 1,...n$
-\State Initialize $w = (0,...,0)$
-\Repeat
-  \State $\Delta = (0,...,0)$
-  \For{$i = 1, ..., n$}
-    \State $\hat { y } _ { i } = \frac { 1} { 1+ e ^ { - w } T _ { x _ { i } } } $
-    \State $\nabla = \nabla + \left( \hat { y } _ { i } - y _ { i } \right) x _ { i } $
-  \EndFor  
-  \State $w = w - \eta \Delta $
-\Until{$|\Delta|\leq \epsilon$}
-\end{algorithmic}
-
-\subsection{Termination Criteria Considerations}
-\label{sec:orgf868f74}
-The setting of terminating condition can be tricky for gradient descent
-\begin{itemize}
-\item If terminates prematurely, the algorithm may not reach the global minimum
-\item If there is a local minimum, the algorithm may get stuck in local minimum
-\item If set an expected global minimum, it may never be reached by the algorithm
-\end{itemize}
-
-\subsection{Date snooping}
-\label{sec:orgde1dd89}
-Looking at the data before choosing the model is problematic, can lead to a fallacy 
-\begin{itemize}
-\item this is different from using human expertise knowledge for feature engineering, which can help the model
-\end{itemize}
-
-\section{Support Vector Machine}
-\label{sec:orgdcf745a}
-One of the most successful classification algorithm in machine learning. Given multiple decision boundaries that split the data, SVM seeks to find a \textbf{\textbf{hyperplane}} that separate the data, such that the \textbf{\textbf{margin}} is maximized to the nearest trained data points. It is a constrained optimization problem.
-\subsection{Margin}
-\label{sec:orge28ee49}
-Given a linear decision boundary defined by \(w^Tx+b=0\). The functional margin for a point \((x^i, y^i)\) is defined as
-$$
-y^i(w^Tx^i + b)
-$$
-For a fixed w and b, the larger the functional value, the more confident we have about the prediction. However, the functional margin can be arbitrarily changed without changing the boundary at all. So we use geometric margin instead.
-\textbf{\textbf{Geometric Margin}}
-The distance between an example and the decision boundary.
-For training set \(S=\{x^i, y^i\}: i = 1, ... N\) and boundary \(w^T+ b = 0\), compute the geometric margin of all points: 
-$$\gamma^i = \frac{y^i(W \cdot X^i + b}{||W||}, i = 1, ..., N$$
-Note: \(\gamma^i > 0\) if point i is correctly classified
-We want to see if the smallest \(\gamma^i\) is large. 
-$$\gamma =\min_{i=1...n} \gamma^i$$
-\subsection{Optimization Problem}
-\label{sec:org7923a88}
-Maximizing the geometric margin is equivalent to minimizing the magnitude of w subject to maintaining a functional margin of at least 1. 
-$$ \min _ { w ,b } \frac { 1} { 2} \| \mathbf { w } \| ^ { 2} $$
-$$ \text{ subject to } : y ^ { i } \left( \mathbf { w } \cdot \mathbf { x } ^ { i } + b \right) \geq 1,i = 1,\cdots ,N $$
-Results in a quadratic optimization problem with linear inquality constraint. There are several algorithms for solving for QP. We can regard them as black box. The solution can be written in forms of 
-$$ \mathbf { w } = \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } x ^ { i } ,\quad s .t .\sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } = 0 $$  
-The above equation provide the form for w, the value of b can be computed with some additional steps
-\begin{itemize}
-\item w is a linear combination fo all training exampls
-\item many points have zero \(\alpha\)'s, which are the data points that have larger geometric margin
-\item points that have non-zero \(\alpha\)'s are called \textbf{\textbf{support vector}}, which are the data points that have smallest geometric margin
-\end{itemize}
-
-\subsection{Dealing with none linearly separable data}
-\label{sec:orgf2e87c5}
-If data are not linearly separable or data have noise. It becomes difficult to use SVM. We have two ways to deal with these issues. 
-
-\subsection{Soft Margin}
-\label{sec:org1f94771}
-Allow functional margin to be less than 1, or in some cases less than 0 . Adding the software margin to our equation, we have
-$$ \min _ { w ,b } \| \mathbf { w } \| ^ { 2} + c \sum _ { i = 1} ^ { N } \xi _ { i } ^ { k } $$
-$$
-\text{ subject to } : y ^ { i } \left( \mathbf { w } \cdot \mathbf { x } ^ { i } + b \right) \geq 1- \xi _ { i } ,i = 1,\cdots ,N
-$$
-$$
-\xi _ { i } \geq 0,i = 1,\cdots ,N
-$$
-With solution of 
-$$
-w = \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } x ^ { i } ,\quad s .t \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } = 0\text{ and } 0\leq a _ { i } \leq c
-$$
-\begin{itemize}
-\item \(\xi\) can be viewed as errors
-\item Tradeoff between maxmizing decision boundary margin and minimizing error
-\item Parameter c controls this tradeoff, c also puts a box constraints on \(\alpha\) and limits the influence of individual support vector
-\item C is set by the algorithm implementer, and can be derived using cross-validation
-\end{itemize}
-\subsection{Mapping input space to higher dimension}
-\label{sec:orga60f2a7}
-When dataset is too hard to seperate linearly using soft margin. We can map the input space to higher dimension such that the data points become linearly seperatable.
-\subsection{Kernel Function}
-\label{sec:org264db9a}
-Kernel function is a function that maps input space to higher dimension. It can also be viewed measuring similarity. As a result, the decision boundary will be non-linear in the original input space.
-\begin{itemize}
-\item There are many kernel functions, the choice can be derived by cross-validation
-\end{itemize}
-Strengths
-\begin{itemize}
-\item solution is globally optimal
-\item Scales well with higher dimensional data
-\item Can handle non-traditional data like strings, trees
-\end{itemize}
-Weakness
-\begin{itemize}
-\item Need to choose a good kernel
-\item Can be computational expensive for large dataset
-\end{itemize}
-
-\section{Decision Tree}
-\label{sec:org012d9e2}
-Use a tree structure for solving classification problems. Its strengths are 
-\begin{enumerate}
-\item Similar to human decision, high interpretability
-\item Deals with discrete and continuous features without the need for transformation unlike perceptron and logistic regression
-\item Highly flexible, can represent more complex decision boundaries by increasing nodes and depth
-\end{enumerate}
-The learning objective using decision tree is to find a decision tree h that achieves minimum error on training data. 
-\subsection{Algorithm}
-\label{sec:org8c12aaa}
-A top-down, greedy search approach
-\begin{enumerate}
-\item Choose the best test to be the root of tree
-\item Create a descendant node for each test outcomes
-\item Examples in training set S are sent to the appropriate descendent node based on the test outcome
-\item Recursively apply at each descendent node using the subset of training samples
-\item If all samples belong to the same class, turn it into a leaf node
-\end{enumerate}
-
-Choosing the best test, we aim to maximize the information gain. In other words, minimize entropy.
-
-\subsection{Entropy}
-\label{sec:orgce72234}
-Entropy is a \textbf{\textbf{measure of uncertainty}}. If the probability is 1.0, there is no entropy. However, if the probability of an outcome over another is 0.5, the entropy is maximized.
-
-Let y be a categorical random variable that can take k different values: \(v_1, v_2,...,v_k\) and \(p_i=P(y=v_i)\)  for \(i=1,..,k\). The entropy of y, denoted as \(H(y)\) is defined as: 
-$$
-H ( y ) = - \sum _ { i = 1} ^ { k } p _ { i } \log _ { 2} p _ { i }
-$$
-\subsection{Building decision tree}
-\label{sec:orge6598d3}
-We need to choose the split that maximizes \textbf{\textbf{benefit of split}} which effecitvely measures the mutual information between the features x and class label y. The root is then selected based on information gain.  
-$$
-\text{ Benefit of split } = U ( S ) - \sum _ { i } ^ { m } p _ { i } U \left( S _ { i } \right)
-$$
-\subsection{Dealing with multi-nomial features  and continuous features}
-\label{sec:org0811ffd}
-Multi-nominal: If a feature has more than two possible values. 
-\begin{itemize}
-\item can be problemic because there is a bias to prefer multinominal features to binary features.
-\end{itemize}
-
-Continuous features
-\begin{itemize}
-\item Compute a threshold that maximizes information gain, essentially convert it to a binary feature
-\item Both continuous features and discrete features can be used to formulate a decision tree
-\end{itemize}
-
-\subsection{Over-fitting}
-\label{sec:org5aa427a}
-Due to being highly flexible, the decision tree is prone to over-fitting. Two interventions can combat that
-\begin{enumerate}
-\item Early stop
-\begin{itemize}
-\item stop growing the tree when data split does not offer large benefits
-\end{itemize}
-\item Post-pruning
-\begin{itemize}
-\item Separate training data into a training set and validating set
-\item Compute the impact on validation set when pruning each possible node
-\item Prune the node that improves the validation set performance in a greedy fashion
-\end{itemize}
-\end{enumerate}
-
-\subsection{Regression Tree}
-\label{sec:org7ff76ff}
-Using decision tree to apply for regression problems. Prediction is computed as the average of the target values of all examples in the leaf node. Uncertainty is measured by the sum of squared errors within the node.
-
-\section{Questions}
-\label{sec:orgc4f1f9a}
-\begin{enumerate}
-\item The mechanism of Kernel function in SVM in mapping to higher dimension?
-\item The concept of information gain in decision tree?
-\item In choosing between linear models and SVM? Can overfitting be an issue in SVM?
-\end{enumerate}
-
-\section{Machine Learning Handson}
-\label{sec:org8bf179e}
-Investigate a dateset of cancer microarray, and use machine learning model to to predict the outcome   
-\subsection{Make machine learning research reproducible, make it pubic}
-\label{sec:org0acdfd4}
-\begin{itemize}
-\item All optimal tuning parameters chosen for each technique evaluated
-\item The pseudocode for the data partitions
-\item The number of replicates performed to obtain the average test errors
-\item The seed used as the entry point into the random number generator during replication process
-\end{itemize}
-\section{Feature engineering}
-\label{sec:orgedc11dd}
-\subsection{Feature subset selection}
-\label{sec:org520802e}
-Removing features that are not relevant or are redundant, very helpful for high dimensional data. There are three type of feature selection algorithms
-\subsection{The filters which extract features from the data without any learning involved}
-\label{sec:orgac06cd8}
-Gene ranking as a popular statistical method, which ranks gene in the dataset by their significance
-\begin{itemize}
-\item Unconditional Mixture Modelling (univariate): assume two different states of gene on and off, and checks whether the underlying binary state of gene affects the classification using mixture overlap probability
-\item Information Gain Ranking (univariate): approximates the conditional distribute P(C|F), where C is the class label and F is the feature vector. Information gain is used as a surrogate for the conditional distribution
-\item Markov Blanket Filtering (univariete): finds the features that are independent of the class label so that removing them will not affect the accuracy
-\end{itemize}
-\subsection{Dealing with missing values}
-\label{sec:org1884b36}
-Three ways 
-\begin{enumerate}
-\item Remove the column with missing values, may be used if column contains mostly missing values
-\item loss of information
-\item Imputation: replace the missing value with some number. Scikit-learn's imputation library replace values with mean by default.
-\item a better option most of time
-\end{enumerate}
-\subsection{Dealing with Categorical data}
-\label{sec:org9fae788}
-\begin{itemize}
-\item One-Hot Encoding: create new binary columns for each category
-\end{itemize}
-
-\section{Visualization of High Dimensional Data}
-\label{sec:org2fb089f}
-\subsection{TSNE}
-\label{sec:orgd3d2549}
-\begin{itemize}
-\item TSNE: converts similarities between data point to join probabilities and tries to minimize the Kullback-Leibler divergence between the joint probabilities of the low-dimensional embedding and the high-dimensional data
-\end{itemize}
-
-\section{Experiment Design for ML algorithm Evaluation}
-\label{sec:orgc965709}
-\textbf{\textbf{Sparse}}: when a feature have most its entries as zeros.
-\begin{itemize}
-\item sparse maxtrix: a matrix contains mostly zero values
-\item dense matrix: a matrix contains mostly non-zero values
-\end{itemize}
-\subsection{Why high sparsity is desired in many ML applications?}
-\label{sec:org3fd7b6e}
-\begin{enumerate}
-\item Many real datasets such as texts and Microarray data are represented as very high dimensional vectors
-\item Most features in high dimensional vectors are usually non-informative or noisy and may serious affect the generalization performance
-\item A sparse classifier can lead to a simplified decision rule for faster prediction in large-scale problems
-\end{enumerate}
-\subsection{Performance Matrice}
-\label{sec:org6ac7670}
-\begin{itemize}
-\item accuracy
-\item AUC: area under ROC curve
-\item squared loss
-\end{itemize}
-\subsection{Models that perform well across low-dimension to high-dimension data}
-\label{sec:org7c8a94d}
-\begin{itemize}
-\item Random Forest, Neural nets, Boosted Tree, and SVMS
-\end{itemize}
-\section{XGBoost}
-\label{sec:orgc221df0}
-XGBoosst is the leading model for working with standard tabular data (eg. in Pandas Dataframe). It requires more knowledge and model tuning. It is an implementation of the gradient boosted decision trees algorithm.
-\begin{itemize}
-\item start with a baseline prediction, create cycles that repeatedly builds new models and combines them into an ensemble model
-\item to make a prediction, we add the predictions from all previous models
-\item n estimator is key parameter to tune, too small leads to underfitting, and too large leads to overfitting
-\item early stopping rounds is another parameter can stop the algorithm automatically when model stops improving
-\item learning rate allows early predictions to have smaller weight, and later ones have a larger weight. So we can use a larger n estimator value with learning rate
-\item n jobs is a parameter can be set to number of cores to take advantage of parallism
-\end{itemize}
-
-\section{Pipelines}
-\label{sec:org614771f}
-A pipeline bundles preprocessing and modeling steps so you can use the whole bundle as if it were a single step. It involves defining the steps of applying transformors to the data, then train the models. Benefits include
-\begin{enumerate}
-\item cleaner code
-\item fewer bugs
-\item easier to productionize
-\item more options for model testing
-\end{enumerate}
-
-\section{Cross Validation}
-\label{sec:orgd8d3598}
-Provide a more accurate measure of model quality by fold the data into partitions.
-\begin{itemize}
-\item lower score means better model quality
-\end{itemize}
-
-\section{Data leakage}
-\label{sec:org697ab45}
-Leakage causes a model to look accurate until making predictions with the model. Any variable that updates after target values is realized can cause data leakage, so they should be excluded from the feature set. 
-\begin{itemize}
-\item Data leakage can cause major problem in ML production, need to be careful
-\end{itemize}
-
-\section{General Visualization}
-\label{sec:org4bd89a0}
-\subsection{Partial Dependence Plots}
-\label{sec:orgcecec05}
-Show how each variable or predictor affects the model's predictions after the model is fitted. Improve the interpretability.   
-\section{Debugging and Error Analysis}
-\label{sec:orgf0656b9}
-Error analysis is crucial when applying machine learning to real world problems.
-[\url{http://cs229.stanford.edu/materials/ML-advice.pdf}]
-\subsection{Debugging learning algorithms}
-\label{sec:org19ee562}
-\subsubsection{high variance or overfitting: if error is low on training but high on testing. Overlearning the training data but no generalizing well}
-\label{sec:orgc9fee86}
-\begin{itemize}
-\item increase training samples
-\item a smaller set of features
-\end{itemize}
-\subsubsection{high bias: if error is high on training regardless of training samples. Not enough features to learn the problem}
-\label{sec:orgcc4ecd3}
-\begin{itemize}
-\item a larger set of features
-\item design better features
-\end{itemize}
-\subsubsection{algorithm not converging}
-\label{sec:org26b4ea5}
-\begin{itemize}
-\item run gradient descent for more iterations
-\item use Newton's method
-\end{itemize}
-\subsubsection{Not optimizing the right objective function}
-\label{sec:orgd904dfc}
-\begin{itemize}
-\item parameter tuning current algorithm
-\item try another algorithm
-\end{itemize}
-\subsection{Error analysis vs. ablative analysis}
-\label{sec:org1a3acb7}
-\subsubsection{Error analysis tries to explain the difference between current performance and perfect performance.}
-\label{sec:orgcf1a646}
-\subsubsection{Ablative analysis tries to explain the difference between some baseline performance and current performance. Eg. consider a image recognition algorithm with baseline performance of 94\%, and best performance of 99\%.}
-\label{sec:org809df1a}
-\subsection{Two approaches to ML problems}
-\label{sec:orgd550598}
-\begin{enumerate}
-\item careful design: try to design the right features, dataset and algorithm architecture. 
-\begin{itemize}
-\item pro: maybe more scalable
-\item con:Be careful with premature optimization
-\end{itemize}
-\item build and fix: implement something quick, then run error analyses to fix its errors. 
-\begin{itemize}
-\item pro: faster to market
-\end{itemize}
-\end{enumerate}
-\section{misc}
-\label{sec:orga18b382}
-\subsection{treatment effect}
-\label{sec:org8f81b4c}
-The difference between treated and untreated group
-\subsection{parameteric}
-\label{sec:org9d6e616}
-Assume data is drawn from normal distribution
-\subsection{non-parameteric}
-\label{sec:org3b16485}
-Does not assume data to have normal distribution
-\subsection{unconfoundedness}
-\label{sec:orgb5b07b2}
-An assumption that confounding variables are measured in the dataset  
-
 \section{Foundations}
-\label{sec:orgef634ff}
+\label{sec:org7d58c6f}
 \subsection{Probability Theory}
-\label{sec:org1092bf7}
+\label{sec:orgddde38b}
+Three school of thoughts 
+\begin{enumerate}
+\item Classical: Assume everything has equal probability of occuring. e.g. coin flip results in 50\% chance of either head or tail
+\item Frequentist: Derive probability based on known relative frequency. e.g. on average, 1 in 3 students is a computer science student, so a randomly chosen student has 1/3 chance being a cs student
+\item Bayesian: the probability depends personal perspective. e.g. being a doctor with 20 years of experience, based some test results, I believe this patient has 80\% chance of survival
+\end{enumerate}
+new stuff
 \subsubsection{Bayesian Probability}
-\label{sec:org0cff023}
+\label{sec:org49c9b30}
 An intepretation of the concept of probability. Instead of frequency or propensity of some phenomenon, probability is intepreted as reasonable expectation representing a state of knowledge or as quantification of a personal belief.     
 \begin{itemize}
 \item Bayes' therom to convert prior probability to posterior probability based on evidences provided by the observed data
@@ -479,22 +65,437 @@ $$
 \item One advantage of the Bayesian viewpoint is that inclusion of prior knowledge arises naturally. Suppose, that a fair-looking coin is tossed three times and lands head each time. A classical maximum likelihood estimate of the probability of landing heads would give 1. By contrast, a Bayesian approach with any reasonable prior will lead to much less extreme conclusion
 \end{itemize}
 \subsubsection{The Gaussian distribution}
-\label{sec:org3a4b739}
+\label{sec:org86ce7e6}
 For a single real-valued variable x, the Gaussian distribution is defined by 
 $$
 \mathcal { N } \left( x | \mu , \sigma ^ { 2 } \right) = \frac { 1 } { \left( 2 \pi \sigma ^ { 2 } \right) ^ { 1 / 2 } } \exp \left\{ - \frac { 1 } { 2 \sigma ^ { 2 } } ( x - \mu ) ^ { 2 } \right\}
 $$
 Two key parameters are \(\sigma^2\), the standard deviation and \(\mu\), the mean. The reciprocal of variance is called precision, written as \(\beta = 1 / \sigma ^ { 2 }\) 
 \subsubsection{Curve fitting}
-\label{sec:org8eba113}
+\label{sec:orga93ac54}
 \subsection{Model Selection}
-\label{sec:org4bf5f99}
+\label{sec:orgd3331ca}
 \subsection{The Curse of Dimensionality}
-\label{sec:org1121f76}
+\label{sec:orgce96bc4}
 \subsection{Decision Theory}
-\label{sec:org16e1d2c}
+\label{sec:orgde215f4}
 \subsection{Information Theory}
-\label{sec:org26185d5}
+\label{sec:org6b67afd}
+\section{Logistic Regression}
+\label{sec:org6c28694}
+\subsection{Three linear models}
+\label{sec:org0e7fe1e}
+\begin{enumerate}
+\item linear classification(perceptron): \(h(x)=sign(s)\) 
+\begin{itemize}
+\item output is 1 or 0
+\end{itemize}
+\item linear regression: \(h(x)=s\) 
+\begin{itemize}
+\item output is linear transformation
+\end{itemize}
+\item logistic regression: \(h(x)= \theta(s)\)
+\begin{itemize}
+\item output is a probability given by a sigmoid function
+\end{itemize}
+\end{enumerate}
+where \(s=\sum_{i=0}^{d}w_{i}x_{i}\) 
+
+\subsection{Sigmoid function}
+\label{sec:orgba3fd42}
+also known as the sigmoid or logistic function 
+$$
+\sigma(w^Tx) = \frac{1}{1+e^{-w^T x}} 
+$$
+
+\subsection{Logistic Regression Function}
+\label{sec:orgc820129}
+The logistic regression model specifies the probability of a binary output \(y_i \in \{0,1\}\) given the input \(x_i\) as follows:
+$$
+\left.\begin{aligned} p ( \mathbf { y } | \mathbf { X } ,\theta ) & = \prod _ { i = 1} ^ { n } \operatorname{Ber} \left( y _ { i } | \operatorname{sigm} \left( \mathbf { x } _ { i } \theta \right) \right) \\ & = \prod _ { i = 1} ^ { n } \left[ \frac { 1} { 1+ e ^ { - x _ { i } \theta } } \right] ^ { y _ { i } } \left[ 1- \frac { 1} { 1+ e ^ { - x _ { i } \theta } } \right] ^ { 1- y _ { i } } \end{aligned} \right.
+$$
+where \(x _ { i } \theta = \theta _ { 0} + \sum _ { j = 1} ^ { d } \theta _ { j } x _ { i j }\)
+
+\subsection{Error measure(Cross-entropy Error)}
+\label{sec:org9197130}
+Based on \textbf{\textbf{Likelihood}}: if hypothesis h = f, how likely to get y from x.
+Given a set of training data points \$(x\_i, y\_i), i = 1,\ldots{},n,\$ where \(y_i \in \{0, 1\}\).
+We need to find a weight vector w s.t. the probability of the correct \(y_i \text{ for } x_i\) is high for \(i=1,...n\)
+$$
+max P(y=y_i|x_i; w)
+$$ (maxmize the log likelihood)
+Equiv to  
+$$
+min -\sum_{i=1}^n log P(y=y_i|x_i; w) 
+$$ (minimize the negative log likelihood)
+
+\subsection{Gradient Descent}
+\label{sec:org9ef657b}
+Compared to linear regression, logistic regression does not have a closed-form solution, instead of a \textbf{\textbf{iterative solution}} is used, which is called \textbf{\textbf{gradient descent}} 
+\begin{enumerate}
+\item Start at w(0)
+\item Takes a step along the steepest slope
+\item Takes a step toward that direction
+\item Repeat until no local improvement is possible
+\end{enumerate}
+
+\subsection{Algorithm}
+\label{sec:org900b94d}
+This is the algorithm for batch learning of logistic regression. It is very similar to linear classification's algorithm (perceptron). Both learns a linear decision boundary.
+\begin{algorithmic}
+\State Given: $(x_i, y_i), i = 1,...n$
+\State Initialize $w = (0,...,0)$
+\Repeat
+  \State $\Delta = (0,...,0)$
+  \For{$i = 1, ..., n$}
+    \State $\hat { y } _ { i } = \frac { 1} { 1+ e ^ { - w } T _ { x _ { i } } } $
+    \State $\nabla = \nabla + \left( \hat { y } _ { i } - y _ { i } \right) x _ { i } $
+  \EndFor  
+  \State $w = w - \eta \Delta $
+\Until{$|\Delta|\leq \epsilon$}
+\end{algorithmic}
+
+\subsection{Termination Criteria Considerations}
+\label{sec:orgc2aed30}
+The setting of terminating condition can be tricky for gradient descent
+\begin{itemize}
+\item If terminates prematurely, the algorithm may not reach the global minimum
+\item If there is a local minimum, the algorithm may get stuck in local minimum
+\item If set an expected global minimum, it may never be reached by the algorithm
+\end{itemize}
+
+\subsection{Date snooping}
+\label{sec:org2a2f0ba}
+Looking at the data before choosing the model is problematic, can lead to a fallacy 
+\begin{itemize}
+\item this is different from using human expertise knowledge for feature engineering, which can help the model
+\end{itemize}
+
+\section{Support Vector Machine}
+\label{sec:org762e739}
+One of the most successful classification algorithm in machine learning. Given multiple decision boundaries that split the data, SVM seeks to find a \textbf{\textbf{hyperplane}} that separate the data, such that the \textbf{\textbf{margin}} is maximized to the nearest trained data points. It is a constrained optimization problem.
+\subsection{Margin}
+\label{sec:org107c700}
+Given a linear decision boundary defined by \(w^Tx+b=0\). The functional margin for a point \((x^i, y^i)\) is defined as
+$$
+y^i(w^Tx^i + b)
+$$
+For a fixed w and b, the larger the functional value, the more confident we have about the prediction. However, the functional margin can be arbitrarily changed without changing the boundary at all. So we use geometric margin instead.
+\textbf{\textbf{Geometric Margin}}
+The distance between an example and the decision boundary.
+For training set \(S=\{x^i, y^i\}: i = 1, ... N\) and boundary \(w^T+ b = 0\), compute the geometric margin of all points: 
+$$\gamma^i = \frac{y^i(W \cdot X^i + b}{||W||}, i = 1, ..., N$$
+Note: \(\gamma^i > 0\) if point i is correctly classified
+We want to see if the smallest \(\gamma^i\) is large. 
+$$\gamma =\min_{i=1...n} \gamma^i$$
+\subsection{Optimization Problem}
+\label{sec:orgfc8b16b}
+Maximizing the geometric margin is equivalent to minimizing the magnitude of w subject to maintaining a functional margin of at least 1. 
+$$ \min _ { w ,b } \frac { 1} { 2} \| \mathbf { w } \| ^ { 2} $$
+$$ \text{ subject to } : y ^ { i } \left( \mathbf { w } \cdot \mathbf { x } ^ { i } + b \right) \geq 1,i = 1,\cdots ,N $$
+Results in a quadratic optimization problem with linear inquality constraint. There are several algorithms for solving for QP. We can regard them as black box. The solution can be written in forms of 
+$$ \mathbf { w } = \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } x ^ { i } ,\quad s .t .\sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } = 0 $$  
+The above equation provide the form for w, the value of b can be computed with some additional steps
+\begin{itemize}
+\item w is a linear combination fo all training exampls
+\item many points have zero \(\alpha\)'s, which are the data points that have larger geometric margin
+\item points that have non-zero \(\alpha\)'s are called \textbf{\textbf{support vector}}, which are the data points that have smallest geometric margin
+\end{itemize}
+
+\subsection{Dealing with none linearly separable data}
+\label{sec:orgd9a5284}
+If data are not linearly separable or data have noise. It becomes difficult to use SVM. We have two ways to deal with these issues. 
+
+\subsection{Soft Margin}
+\label{sec:orgc87ed8a}
+Allow functional margin to be less than 1, or in some cases less than 0 . Adding the software margin to our equation, we have
+$$ \min _ { w ,b } \| \mathbf { w } \| ^ { 2} + c \sum _ { i = 1} ^ { N } \xi _ { i } ^ { k } $$
+$$
+\text{ subject to } : y ^ { i } \left( \mathbf { w } \cdot \mathbf { x } ^ { i } + b \right) \geq 1- \xi _ { i } ,i = 1,\cdots ,N
+$$
+$$
+\xi _ { i } \geq 0,i = 1,\cdots ,N
+$$
+With solution of 
+$$
+w = \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } x ^ { i } ,\quad s .t \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } = 0\text{ and } 0\leq a _ { i } \leq c
+$$
+\begin{itemize}
+\item \(\xi\) can be viewed as errors
+\item Tradeoff between maxmizing decision boundary margin and minimizing error
+\item Parameter c controls this tradeoff, c also puts a box constraints on \(\alpha\) and limits the influence of individual support vector
+\item C is set by the algorithm implementer, and can be derived using cross-validation
+\end{itemize}
+\subsection{Mapping input space to higher dimension}
+\label{sec:orgf54963d}
+When dataset is too hard to seperate linearly using soft margin. We can map the input space to higher dimension such that the data points become linearly seperatable.
+\subsection{Kernel Function}
+\label{sec:orgb69172f}
+Kernel function is a function that maps input space to higher dimension. It can also be viewed measuring similarity. As a result, the decision boundary will be non-linear in the original input space.
+\begin{itemize}
+\item There are many kernel functions, the choice can be derived by cross-validation
+\end{itemize}
+Strengths
+\begin{itemize}
+\item solution is globally optimal
+\item Scales well with higher dimensional data
+\item Can handle non-traditional data like strings, trees
+\end{itemize}
+Weakness
+\begin{itemize}
+\item Need to choose a good kernel
+\item Can be computational expensive for large dataset
+\end{itemize}
+
+\section{Decision Tree}
+\label{sec:org33b79f1}
+Use a tree structure for solving classification problems. Its strengths are 
+\begin{enumerate}
+\item Similar to human decision, high interpretability
+\item Deals with discrete and continuous features without the need for transformation unlike perceptron and logistic regression
+\item Highly flexible, can represent more complex decision boundaries by increasing nodes and depth
+\end{enumerate}
+The learning objective using decision tree is to find a decision tree h that achieves minimum error on training data. 
+\subsection{Algorithm}
+\label{sec:org3870dab}
+A top-down, greedy search approach
+\begin{enumerate}
+\item Choose the best test to be the root of tree
+\item Create a descendant node for each test outcomes
+\item Examples in training set S are sent to the appropriate descendent node based on the test outcome
+\item Recursively apply at each descendent node using the subset of training samples
+\item If all samples belong to the same class, turn it into a leaf node
+\end{enumerate}
+
+Choosing the best test, we aim to maximize the information gain. In other words, minimize entropy.
+
+\subsection{Entropy}
+\label{sec:orgc1d794a}
+Entropy is a \textbf{\textbf{measure of uncertainty}}. If the probability is 1.0, there is no entropy. However, if the probability of an outcome over another is 0.5, the entropy is maximized.
+
+Let y be a categorical random variable that can take k different values: \(v_1, v_2,...,v_k\) and \(p_i=P(y=v_i)\)  for \(i=1,..,k\). The entropy of y, denoted as \(H(y)\) is defined as: 
+$$
+H ( y ) = - \sum _ { i = 1} ^ { k } p _ { i } \log _ { 2} p _ { i }
+$$
+\subsection{Building decision tree}
+\label{sec:org306ebf2}
+We need to choose the split that maximizes \textbf{\textbf{benefit of split}} which effecitvely measures the mutual information between the features x and class label y. The root is then selected based on information gain.  
+$$
+\text{ Benefit of split } = U ( S ) - \sum _ { i } ^ { m } p _ { i } U \left( S _ { i } \right)
+$$
+\subsection{Dealing with multi-nomial features  and continuous features}
+\label{sec:org0ad525a}
+Multi-nominal: If a feature has more than two possible values. 
+\begin{itemize}
+\item can be problemic because there is a bias to prefer multinominal features to binary features.
+\end{itemize}
+
+Continuous features
+\begin{itemize}
+\item Compute a threshold that maximizes information gain, essentially convert it to a binary feature
+\item Both continuous features and discrete features can be used to formulate a decision tree
+\end{itemize}
+
+\subsection{Over-fitting}
+\label{sec:org3795ac1}
+Due to being highly flexible, the decision tree is prone to over-fitting. Two interventions can combat that
+\begin{enumerate}
+\item Early stop
+\begin{itemize}
+\item stop growing the tree when data split does not offer large benefits
+\end{itemize}
+\item Post-pruning
+\begin{itemize}
+\item Separate training data into a training set and validating set
+\item Compute the impact on validation set when pruning each possible node
+\item Prune the node that improves the validation set performance in a greedy fashion
+\end{itemize}
+\end{enumerate}
+
+\subsection{Regression Tree}
+\label{sec:org1cd8db4}
+Using decision tree to apply for regression problems. Prediction is computed as the average of the target values of all examples in the leaf node. Uncertainty is measured by the sum of squared errors within the node.
+
+\section{Questions}
+\label{sec:org2a06606}
+\begin{enumerate}
+\item The mechanism of Kernel function in SVM in mapping to higher dimension?
+\item The concept of information gain in decision tree?
+\item In choosing between linear models and SVM? Can overfitting be an issue in SVM?
+\end{enumerate}
+
+\section{Machine Learning Handson}
+\label{sec:orgc038330}
+Investigate a dateset of cancer microarray, and use machine learning model to to predict the outcome   
+\subsection{Make machine learning research reproducible, make it pubic}
+\label{sec:org528d9a7}
+\begin{itemize}
+\item All optimal tuning parameters chosen for each technique evaluated
+\item The pseudocode for the data partitions
+\item The number of replicates performed to obtain the average test errors
+\item The seed used as the entry point into the random number generator during replication process
+\end{itemize}
+\section{Feature engineering}
+\label{sec:org98f8030}
+\subsection{Feature subset selection}
+\label{sec:orgd9aa744}
+Removing features that are not relevant or are redundant, very helpful for high dimensional data. There are three type of feature selection algorithms
+\subsection{The filters which extract features from the data without any learning involved}
+\label{sec:org330101b}
+Gene ranking as a popular statistical method, which ranks gene in the dataset by their significance
+\begin{itemize}
+\item Unconditional Mixture Modelling (univariate): assume two different states of gene on and off, and checks whether the underlying binary state of gene affects the classification using mixture overlap probability
+\item Information Gain Ranking (univariate): approximates the conditional distribute P(C|F), where C is the class label and F is the feature vector. Information gain is used as a surrogate for the conditional distribution
+\item Markov Blanket Filtering (univariete): finds the features that are independent of the class label so that removing them will not affect the accuracy
+\end{itemize}
+\subsection{Dealing with missing values}
+\label{sec:org77a35ab}
+Three ways 
+\begin{enumerate}
+\item Remove the column with missing values, may be used if column contains mostly missing values
+\item loss of information
+\item Imputation: replace the missing value with some number. Scikit-learn's imputation library replace values with mean by default.
+\item a better option most of time
+\end{enumerate}
+\subsection{Dealing with Categorical data}
+\label{sec:org8784723}
+\begin{itemize}
+\item One-Hot Encoding: create new binary columns for each category
+\end{itemize}
+
+\section{Visualization of High Dimensional Data}
+\label{sec:org74fc431}
+\subsection{TSNE}
+\label{sec:orgb40e696}
+\begin{itemize}
+\item TSNE: converts similarities between data point to join probabilities and tries to minimize the Kullback-Leibler divergence between the joint probabilities of the low-dimensional embedding and the high-dimensional data
+\end{itemize}
+
+\section{Experiment Design for ML algorithm Evaluation}
+\label{sec:org93fb156}
+\textbf{\textbf{Sparse}}: when a feature have most its entries as zeros.
+\begin{itemize}
+\item sparse maxtrix: a matrix contains mostly zero values
+\item dense matrix: a matrix contains mostly non-zero values
+\end{itemize}
+\subsection{Why high sparsity is desired in many ML applications?}
+\label{sec:org705ac8f}
+\begin{enumerate}
+\item Many real datasets such as texts and Microarray data are represented as very high dimensional vectors
+\item Most features in high dimensional vectors are usually non-informative or noisy and may serious affect the generalization performance
+\item A sparse classifier can lead to a simplified decision rule for faster prediction in large-scale problems
+\end{enumerate}
+\subsection{Performance Matrice}
+\label{sec:org8d5673d}
+\begin{itemize}
+\item accuracy
+\item AUC: area under ROC curve
+\item squared loss
+\end{itemize}
+\subsection{Models that perform well across low-dimension to high-dimension data}
+\label{sec:orga29e458}
+\begin{itemize}
+\item Random Forest, Neural nets, Boosted Tree, and SVMS
+\end{itemize}
+\section{XGBoost}
+\label{sec:orgaf89eea}
+XGBoosst is the leading model for working with standard tabular data (eg. in Pandas Dataframe). It requires more knowledge and model tuning. It is an implementation of the gradient boosted decision trees algorithm.
+\begin{itemize}
+\item start with a baseline prediction, create cycles that repeatedly builds new models and combines them into an ensemble model
+\item to make a prediction, we add the predictions from all previous models
+\item n estimator is key parameter to tune, too small leads to underfitting, and too large leads to overfitting
+\item early stopping rounds is another parameter can stop the algorithm automatically when model stops improving
+\item learning rate allows early predictions to have smaller weight, and later ones have a larger weight. So we can use a larger n estimator value with learning rate
+\item n jobs is a parameter can be set to number of cores to take advantage of parallism
+\end{itemize}
+
+\section{Pipelines}
+\label{sec:org8d7c60a}
+A pipeline bundles preprocessing and modeling steps so you can use the whole bundle as if it were a single step. It involves defining the steps of applying transformors to the data, then train the models. Benefits include
+\begin{enumerate}
+\item cleaner code
+\item fewer bugs
+\item easier to productionize
+\item more options for model testing
+\end{enumerate}
+
+\section{Cross Validation}
+\label{sec:orgf4bcb24}
+Provide a more accurate measure of model quality by fold the data into partitions.
+\begin{itemize}
+\item lower score means better model quality
+\end{itemize}
+
+\section{Data leakage}
+\label{sec:org93f9a6d}
+Leakage causes a model to look accurate until making predictions with the model. Any variable that updates after target values is realized can cause data leakage, so they should be excluded from the feature set. 
+\begin{itemize}
+\item Data leakage can cause major problem in ML production, need to be careful
+\end{itemize}
+
+\section{General Visualization}
+\label{sec:orgbc77d49}
+\subsection{Partial Dependence Plots}
+\label{sec:org0c5a188}
+Show how each variable or predictor affects the model's predictions after the model is fitted. Improve the interpretability.   
+\section{Debugging and Error Analysis}
+\label{sec:orgd592c9d}
+Error analysis is crucial when applying machine learning to real world problems.
+[\url{http://cs229.stanford.edu/materials/ML-advice.pdf}]
+\subsection{Debugging learning algorithms}
+\label{sec:orgfc808d8}
+\begin{itemize}
+\item high variance or overfitting: if error is low on training but high on testing. Overlearning the training data but no generalizing well
+\begin{itemize}
+\item increase training samples
+\item a smaller set of features
+\end{itemize}
+\item high bias: if error is high on training regardless of training samples. Not enough features to learn the problem
+\begin{itemize}
+\item a larger set of features
+\item design better features
+\end{itemize}
+\item algorithm not converging
+\item run gradient descent for more iterations
+\item use Newton's method
+\item Not optimizing the right objective function
+\item parameter tuning current algorithm
+\item try another algorithm
+\end{itemize}
+\subsection{Error analysis vs. ablative analysis}
+\label{sec:org62f0942}
+\begin{itemize}
+\item Error analysis tries to explain the difference between current performance and perfect performance.
+\item Ablative analysis tries to explain the difference between some baseline performance and current performance. Eg. consider a image recognition algorithm with baseline performance of 94\%, and best performance of 99\%.
+\end{itemize}
+\subsection{Two approaches to ML problems}
+\label{sec:orgf18d0d7}
+\begin{enumerate}
+\item careful design: try to design the right features, dataset and algorithm architecture. 
+\begin{itemize}
+\item pro: maybe more scalable
+\item con:Be careful with premature optimization
+\end{itemize}
+\item build and fix: implement something quick, then run error analyses to fix its errors. 
+\begin{itemize}
+\item pro: faster to market
+\end{itemize}
+\end{enumerate}
+\section{misc}
+\label{sec:org354c076}
+\subsection{treatment effect}
+\label{sec:org6a51cdb}
+The difference between treated and untreated group
+\subsection{parameteric}
+\label{sec:org4825f2c}
+Assume data is drawn from normal distribution
+\subsection{non-parameteric}
+\label{sec:orgcc90707}
+Does not assume data to have normal distribution
+\subsection{unconfoundedness}
+\label{sec:org817179f}
+An assumption that confounding variables are measured in the dataset  
+
 \section{Probability Distributions}
-\label{sec:orgebf14cb}
+\label{sec:org97f4278}
 \end{document}
