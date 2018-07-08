@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Machine Learning Notes</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Ziwei" />
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Machine Learning Notes</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org80a7c67">1. Logistic Regression</a>
+<ul>
+<li><a href="#org581d987">1.1. Three linear models</a></li>
+<li><a href="#org1e5cd46">1.2. Sigmoid function</a></li>
+<li><a href="#org5fce5b4">1.3. Logistic Regression Function</a></li>
+<li><a href="#org7b5e283">1.4. Error measure(Cross-entropy Error)</a></li>
+<li><a href="#org0a3cf38">1.5. Gradient Descent</a></li>
+<li><a href="#org1c5e88f">1.6. Algorithm</a></li>
+<li><a href="#org66dfb90">1.7. Termination Criteria Considerations</a></li>
+<li><a href="#org12aea49">1.8. Date snooping</a></li>
+</ul>
+</li>
+<li><a href="#orgc957f01">2. Support Vector Machine</a>
+<ul>
+<li><a href="#orgb35c8ad">2.1. Margin</a></li>
+<li><a href="#org6b81aeb">2.2. Optimization Problem</a></li>
+<li><a href="#org3a15107">2.3. Dealing with none linearly separable data</a></li>
+<li><a href="#org5a9e0c6">2.4. Soft Margin</a></li>
+<li><a href="#org849ef51">2.5. Mapping input space to higher dimension</a></li>
+<li><a href="#orgeab858e">2.6. Kernel Function</a></li>
+</ul>
+</li>
+<li><a href="#orgca3e68d">3. Decision Tree</a>
+<ul>
+<li><a href="#org97d0750">3.1. Algorithm</a></li>
+<li><a href="#org5a0be2a">3.2. Entropy</a></li>
+<li><a href="#orgdf5ca26">3.3. Building decision tree</a></li>
+<li><a href="#org5b54601">3.4. Dealing with multi-nomial features  and continuous features</a></li>
+<li><a href="#org74a8551">3.5. Over-fitting</a></li>
+<li><a href="#org0957204">3.6. Regression Tree</a></li>
+</ul>
+</li>
+<li><a href="#org4fe4220">4. Questions</a></li>
+<li><a href="#orgd61166d">5. Machine Learning Handson</a>
+<ul>
+<li><a href="#org533f2d9">5.1. Make machine learning research reproducible, make it pubic</a></li>
+</ul>
+</li>
+<li><a href="#orgba1076e">6. Feature engineering</a>
+<ul>
+<li><a href="#orgf731fc3">6.1. Feature subset selection</a></li>
+<li><a href="#org759b946">6.2. The filters which extract features from the data without any learning involved</a></li>
+<li><a href="#orgd4e4cd1">6.3. Dealing with missing values</a></li>
+<li><a href="#org5673e18">6.4. Dealing with Categorical data</a></li>
+</ul>
+</li>
+<li><a href="#orgad36962">7. Visualization of High Dimensional Data</a>
+<ul>
+<li><a href="#org9179e32">7.1. TSNE</a></li>
+</ul>
+</li>
+<li><a href="#org1e0645b">8. Experiment Design for ML algorithm Evaluation</a>
+<ul>
+<li><a href="#orge0fe96e">8.1. Why high sparsity is desired in many ML applications?</a></li>
+<li><a href="#orga88818f">8.2. Performance Matrice</a></li>
+<li><a href="#org25b30a6">8.3. Models that perform well across low-dimension to high-dimension data</a></li>
+</ul>
+</li>
+<li><a href="#orga4b22b7">9. XGBoost</a></li>
+<li><a href="#org29bc632">10. Pipelines</a></li>
+<li><a href="#org06bcf68">11. Cross Validation</a></li>
+<li><a href="#orgc692fd1">12. Data leakage</a></li>
+<li><a href="#org44a213b">13. General Visualization</a>
+<ul>
+<li><a href="#orgaf40acc">13.1. Partial Dependence Plots</a></li>
+</ul>
+</li>
+<li><a href="#org7ef7f12">14. Debugging and Error Analysis</a>
+<ul>
+<li><a href="#orgd1e85b8">14.1. Debugging learning algorithms</a>
+<ul>
+<li><a href="#org633457b">14.1.1. high variance or overfitting: if error is low on training but high on testing. Overlearning the training data but no generalizing well</a></li>
+<li><a href="#org4b682ae">14.1.2. high bias: if error is high on training regardless of training samples. Not enough features to learn the problem</a></li>
+<li><a href="#org8655dc9">14.1.3. algorithm not converging</a></li>
+<li><a href="#org0765e28">14.1.4. Not optimizing the right objective function</a></li>
+</ul>
+</li>
+<li><a href="#org4b69ce7">14.2. Error analysis vs. ablative analysis</a>
+<ul>
+<li><a href="#orgc9c1607">14.2.1. Error analysis tries to explain the difference between current performance and perfect performance.</a></li>
+<li><a href="#org93c6672">14.2.2. Ablative analysis tries to explain the difference between some baseline performance and current performance. Eg. consider a image recognition algorithm with baseline performance of 94%, and best performance of 99%.</a></li>
+</ul>
+</li>
+<li><a href="#org1419644">14.3. Two approaches to ML problems</a></li>
+</ul>
+</li>
+<li><a href="#orgf056a2c">15. misc</a>
+<ul>
+<li><a href="#org6d3b27c">15.1. treatment effect</a></li>
+<li><a href="#orgba99546">15.2. parameteric</a></li>
+<li><a href="#orgce415c2">15.3. non-parameteric</a></li>
+<li><a href="#org8a03530">15.4. unconfoundedness</a></li>
+</ul>
+</li>
+<li><a href="#org1949e27">16. Foundations</a>
+<ul>
+<li><a href="#org719bad3">16.1. Probability Theory</a>
+<ul>
+<li><a href="#org3b5b9af">16.1.1. Bayesian Probability</a></li>
+<li><a href="#orgd31a870">16.1.2. The Gaussian distribution</a></li>
+<li><a href="#org6035efc">16.1.3. Curve fitting</a></li>
+</ul>
+</li>
+<li><a href="#org41a8235">16.2. Model Selection</a></li>
+<li><a href="#org18a35ea">16.3. The Curse of Dimensionality</a></li>
+<li><a href="#org32299fa">16.4. Decision Theory</a></li>
+<li><a href="#orgfc91ee0">16.5. Information Theory</a></li>
+</ul>
+</li>
+<li><a href="#orgfe505cf">17. Probability Distributions</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org80a7c67" class="outline-2">
+<h2 id="org80a7c67"><span class="section-number-2">1</span> Logistic Regression</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org581d987" class="outline-3">
+<h3 id="org581d987"><span class="section-number-3">1.1</span> Three linear models</h3>
+<div class="outline-text-3" id="text-1-1">
+<ol class="org-ol">
+<li>linear classification(perceptron): \(h(x)=sign(s)\) 
+<ul class="org-ul">
+<li>output is 1 or 0</li>
+</ul></li>
+<li>linear regression: \(h(x)=s\) 
+<ul class="org-ul">
+<li>output is linear transformation</li>
+</ul></li>
+<li>logistic regression: \(h(x)= \theta(s)\)
+<ul class="org-ul">
+<li>output is a probability given by a sigmoid function</li>
+</ul></li>
+</ol>
+<p>
+where \(s=\sum_{i=0}^{d}w_{i}x_{i}\) 
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1e5cd46" class="outline-3">
+<h3 id="org1e5cd46"><span class="section-number-3">1.2</span> Sigmoid function</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+also known as the sigmoid or logistic function 
+\[
+\sigma(w^Tx) = \frac{1}{1+e^{-w^T x}} 
+\]
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5fce5b4" class="outline-3">
+<h3 id="org5fce5b4"><span class="section-number-3">1.3</span> Logistic Regression Function</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+The logistic regression model specifies the probability of a binary output \(y_i \in \{0,1\}\) given the input \(x_i\) as follows:
+\[
+\left.\begin{aligned} p ( \mathbf { y } | \mathbf { X } ,\theta ) & = \prod _ { i = 1} ^ { n } \operatorname{Ber} \left( y _ { i } | \operatorname{sigm} \left( \mathbf { x } _ { i } \theta \right) \right) \\ & = \prod _ { i = 1} ^ { n } \left[ \frac { 1} { 1+ e ^ { - x _ { i } \theta } } \right] ^ { y _ { i } } \left[ 1- \frac { 1} { 1+ e ^ { - x _ { i } \theta } } \right] ^ { 1- y _ { i } } \end{aligned} \right.
+\]
+where \(x _ { i } \theta = \theta _ { 0} + \sum _ { j = 1} ^ { d } \theta _ { j } x _ { i j }\)
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7b5e283" class="outline-3">
+<h3 id="org7b5e283"><span class="section-number-3">1.4</span> Error measure(Cross-entropy Error)</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+Based on <b><b>Likelihood</b></b>: if hypothesis h = f, how likely to get y from x.
+Given a set of training data points $(x_i, y_i), i = 1,&#x2026;,n,$ where \(y_i \in \{0, 1\}\).
+We need to find a weight vector w s.t. the probability of the correct \(y_i \text{ for } x_i\) is high for \(i=1,...n\)
+\[
+max P(y=y_i|x_i; w)
+\] (maxmize the log likelihood)
+Equiv to  
+\[
+min -\sum_{i=1}^n log P(y=y_i|x_i; w) 
+\] (minimize the negative log likelihood)
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0a3cf38" class="outline-3">
+<h3 id="org0a3cf38"><span class="section-number-3">1.5</span> Gradient Descent</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+Compared to linear regression, logistic regression does not have a closed-form solution, instead of a <b><b>iterative solution</b></b> is used, which is called <b><b>gradient descent</b></b> 
+</p>
+<ol class="org-ol">
+<li>Start at w(0)</li>
+<li>Takes a step along the steepest slope</li>
+<li>Takes a step toward that direction</li>
+<li>Repeat until no local improvement is possible</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org1c5e88f" class="outline-3">
+<h3 id="org1c5e88f"><span class="section-number-3">1.6</span> Algorithm</h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+This is the algorithm for batch learning of logistic regression. It is very similar to linear classification&rsquo;s algorithm (perceptron). Both learns a linear decision boundary.
+</p>
+\begin{algorithmic}
+\State Given: $(x_i, y_i), i = 1,...n$
+\State Initialize $w = (0,...,0)$
+\Repeat
+  \State $\Delta = (0,...,0)$
+  \For{$i = 1, ..., n$}
+    \State $\hat { y } _ { i } = \frac { 1} { 1+ e ^ { - w } T _ { x _ { i } } } $
+    \State $\nabla = \nabla + \left( \hat { y } _ { i } - y _ { i } \right) x _ { i } $
+  \EndFor  
+  \State $w = w - \eta \Delta $
+\Until{$|\Delta|\leq \epsilon$}
+\end{algorithmic}
+</div>
+</div>
+
+<div id="outline-container-org66dfb90" class="outline-3">
+<h3 id="org66dfb90"><span class="section-number-3">1.7</span> Termination Criteria Considerations</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+The setting of terminating condition can be tricky for gradient descent
+</p>
+<ul class="org-ul">
+<li>If terminates prematurely, the algorithm may not reach the global minimum</li>
+<li>If there is a local minimum, the algorithm may get stuck in local minimum</li>
+<li>If set an expected global minimum, it may never be reached by the algorithm</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org12aea49" class="outline-3">
+<h3 id="org12aea49"><span class="section-number-3">1.8</span> Date snooping</h3>
+<div class="outline-text-3" id="text-1-8">
+<p>
+Looking at the data before choosing the model is problematic, can lead to a fallacy 
+</p>
+<ul class="org-ul">
+<li>this is different from using human expertise knowledge for feature engineering, which can help the model</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc957f01" class="outline-2">
+<h2 id="orgc957f01"><span class="section-number-2">2</span> Support Vector Machine</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+One of the most successful classification algorithm in machine learning. Given multiple decision boundaries that split the data, SVM seeks to find a <b><b>hyperplane</b></b> that separate the data, such that the <b><b>margin</b></b> is maximized to the nearest trained data points. It is a constrained optimization problem.
+</p>
+</div>
+<div id="outline-container-orgb35c8ad" class="outline-3">
+<h3 id="orgb35c8ad"><span class="section-number-3">2.1</span> Margin</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Given a linear decision boundary defined by \(w^Tx+b=0\). The functional margin for a point \((x^i, y^i)\) is defined as
+\[
+y^i(w^Tx^i + b)
+\]
+For a fixed w and b, the larger the functional value, the more confident we have about the prediction. However, the functional margin can be arbitrarily changed without changing the boundary at all. So we use geometric margin instead.
+<b><b>Geometric Margin</b></b>
+The distance between an example and the decision boundary.
+For training set \(S=\{x^i, y^i\}: i = 1, ... N\) and boundary \(w^T+ b = 0\), compute the geometric margin of all points: 
+\[\gamma^i = \frac{y^i(W \cdot X^i + b}{||W||}, i = 1, ..., N\]
+Note: \(\gamma^i > 0\) if point i is correctly classified
+We want to see if the smallest \(\gamma^i\) is large. 
+\[\gamma =\min_{i=1...n} \gamma^i\]
+</p>
+</div>
+</div>
+<div id="outline-container-org6b81aeb" class="outline-3">
+<h3 id="org6b81aeb"><span class="section-number-3">2.2</span> Optimization Problem</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Maximizing the geometric margin is equivalent to minimizing the magnitude of w subject to maintaining a functional margin of at least 1. 
+\[ \min _ { w ,b } \frac { 1} { 2} \| \mathbf { w } \| ^ { 2} \]
+\[ \text{ subject to } : y ^ { i } \left( \mathbf { w } \cdot \mathbf { x } ^ { i } + b \right) \geq 1,i = 1,\cdots ,N \]
+Results in a quadratic optimization problem with linear inquality constraint. There are several algorithms for solving for QP. We can regard them as black box. The solution can be written in forms of 
+\[ \mathbf { w } = \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } x ^ { i } ,\quad s .t .\sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } = 0 \]  
+The above equation provide the form for w, the value of b can be computed with some additional steps
+</p>
+<ul class="org-ul">
+<li>w is a linear combination fo all training exampls</li>
+<li>many points have zero \(\alpha\)&rsquo;s, which are the data points that have larger geometric margin</li>
+<li>points that have non-zero \(\alpha\)&rsquo;s are called <b><b>support vector</b></b>, which are the data points that have smallest geometric margin</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org3a15107" class="outline-3">
+<h3 id="org3a15107"><span class="section-number-3">2.3</span> Dealing with none linearly separable data</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+If data are not linearly separable or data have noise. It becomes difficult to use SVM. We have two ways to deal with these issues. 
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5a9e0c6" class="outline-3">
+<h3 id="org5a9e0c6"><span class="section-number-3">2.4</span> Soft Margin</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+Allow functional margin to be less than 1, or in some cases less than 0 . Adding the software margin to our equation, we have
+\[ \min _ { w ,b } \| \mathbf { w } \| ^ { 2} + c \sum _ { i = 1} ^ { N } \xi _ { i } ^ { k } \]
+\[
+\text{ subject to } : y ^ { i } \left( \mathbf { w } \cdot \mathbf { x } ^ { i } + b \right) \geq 1- \xi _ { i } ,i = 1,\cdots ,N
+\]
+\[
+\xi _ { i } \geq 0,i = 1,\cdots ,N
+\]
+With solution of 
+\[
+w = \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } x ^ { i } ,\quad s .t \sum _ { i = 1} ^ { N } \alpha _ { i } y ^ { i } = 0\text{ and } 0\leq a _ { i } \leq c
+\]
+</p>
+<ul class="org-ul">
+<li>&xi; can be viewed as errors</li>
+<li>Tradeoff between maxmizing decision boundary margin and minimizing error</li>
+<li>Parameter c controls this tradeoff, c also puts a box constraints on \(\alpha\) and limits the influence of individual support vector</li>
+<li>C is set by the algorithm implementer, and can be derived using cross-validation</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org849ef51" class="outline-3">
+<h3 id="org849ef51"><span class="section-number-3">2.5</span> Mapping input space to higher dimension</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+When dataset is too hard to seperate linearly using soft margin. We can map the input space to higher dimension such that the data points become linearly seperatable.
+</p>
+</div>
+</div>
+<div id="outline-container-orgeab858e" class="outline-3">
+<h3 id="orgeab858e"><span class="section-number-3">2.6</span> Kernel Function</h3>
+<div class="outline-text-3" id="text-2-6">
+<p>
+Kernel function is a function that maps input space to higher dimension. It can also be viewed measuring similarity. As a result, the decision boundary will be non-linear in the original input space.
+</p>
+<ul class="org-ul">
+<li>There are many kernel functions, the choice can be derived by cross-validation</li>
+</ul>
+<p>
+Strengths
+</p>
+<ul class="org-ul">
+<li>solution is globally optimal</li>
+<li>Scales well with higher dimensional data</li>
+<li>Can handle non-traditional data like strings, trees</li>
+</ul>
+<p>
+Weakness
+</p>
+<ul class="org-ul">
+<li>Need to choose a good kernel</li>
+<li>Can be computational expensive for large dataset</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgca3e68d" class="outline-2">
+<h2 id="orgca3e68d"><span class="section-number-2">3</span> Decision Tree</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Use a tree structure for solving classification problems. Its strengths are 
+</p>
+<ol class="org-ol">
+<li>Similar to human decision, high interpretability</li>
+<li>Deals with discrete and continuous features without the need for transformation unlike perceptron and logistic regression</li>
+<li>Highly flexible, can represent more complex decision boundaries by increasing nodes and depth</li>
+</ol>
+<p>
+The learning objective using decision tree is to find a decision tree h that achieves minimum error on training data. 
+</p>
+</div>
+<div id="outline-container-org97d0750" class="outline-3">
+<h3 id="org97d0750"><span class="section-number-3">3.1</span> Algorithm</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+A top-down, greedy search approach
+</p>
+<ol class="org-ol">
+<li>Choose the best test to be the root of tree</li>
+<li>Create a descendant node for each test outcomes</li>
+<li>Examples in training set S are sent to the appropriate descendent node based on the test outcome</li>
+<li>Recursively apply at each descendent node using the subset of training samples</li>
+<li>If all samples belong to the same class, turn it into a leaf node</li>
+</ol>
+
+<p>
+Choosing the best test, we aim to maximize the information gain. In other words, minimize entropy.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5a0be2a" class="outline-3">
+<h3 id="org5a0be2a"><span class="section-number-3">3.2</span> Entropy</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Entropy is a <b><b>measure of uncertainty</b></b>. If the probability is 1.0, there is no entropy. However, if the probability of an outcome over another is 0.5, the entropy is maximized.
+</p>
+
+<p>
+Let y be a categorical random variable that can take k different values: \(v_1, v_2,...,v_k\) and \(p_i=P(y=v_i)\)  for \(i=1,..,k\). The entropy of y, denoted as \(H(y)\) is defined as: 
+\[
+H ( y ) = - \sum _ { i = 1} ^ { k } p _ { i } \log _ { 2} p _ { i }
+\]
+</p>
+</div>
+</div>
+<div id="outline-container-orgdf5ca26" class="outline-3">
+<h3 id="orgdf5ca26"><span class="section-number-3">3.3</span> Building decision tree</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+We need to choose the split that maximizes <b><b>benefit of split</b></b> which effecitvely measures the mutual information between the features x and class label y. The root is then selected based on information gain.  
+\[
+\text{ Benefit of split } = U ( S ) - \sum _ { i } ^ { m } p _ { i } U \left( S _ { i } \right)
+\]
+</p>
+</div>
+</div>
+<div id="outline-container-org5b54601" class="outline-3">
+<h3 id="org5b54601"><span class="section-number-3">3.4</span> Dealing with multi-nomial features  and continuous features</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+Multi-nominal: If a feature has more than two possible values. 
+</p>
+<ul class="org-ul">
+<li>can be problemic because there is a bias to prefer multinominal features to binary features.</li>
+</ul>
+
+<p>
+Continuous features
+</p>
+<ul class="org-ul">
+<li>Compute a threshold that maximizes information gain, essentially convert it to a binary feature</li>
+<li>Both continuous features and discrete features can be used to formulate a decision tree</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org74a8551" class="outline-3">
+<h3 id="org74a8551"><span class="section-number-3">3.5</span> Over-fitting</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+Due to being highly flexible, the decision tree is prone to over-fitting. Two interventions can combat that
+</p>
+<ol class="org-ol">
+<li>Early stop
+<ul class="org-ul">
+<li>stop growing the tree when data split does not offer large benefits</li>
+</ul></li>
+<li>Post-pruning
+<ul class="org-ul">
+<li>Separate training data into a training set and validating set</li>
+<li>Compute the impact on validation set when pruning each possible node</li>
+<li>Prune the node that improves the validation set performance in a greedy fashion</li>
+</ul></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org0957204" class="outline-3">
+<h3 id="org0957204"><span class="section-number-3">3.6</span> Regression Tree</h3>
+<div class="outline-text-3" id="text-3-6">
+<p>
+Using decision tree to apply for regression problems. Prediction is computed as the average of the target values of all examples in the leaf node. Uncertainty is measured by the sum of squared errors within the node.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4fe4220" class="outline-2">
+<h2 id="org4fe4220"><span class="section-number-2">4</span> Questions</h2>
+<div class="outline-text-2" id="text-4">
+<ol class="org-ol">
+<li>The mechanism of Kernel function in SVM in mapping to higher dimension?</li>
+<li>The concept of information gain in decision tree?</li>
+<li>In choosing between linear models and SVM? Can overfitting be an issue in SVM?</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgd61166d" class="outline-2">
+<h2 id="orgd61166d"><span class="section-number-2">5</span> Machine Learning Handson</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Investigate a dateset of cancer microarray, and use machine learning model to to predict the outcome   
+</p>
+</div>
+<div id="outline-container-org533f2d9" class="outline-3">
+<h3 id="org533f2d9"><span class="section-number-3">5.1</span> Make machine learning research reproducible, make it pubic</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li>All optimal tuning parameters chosen for each technique evaluated</li>
+<li>The pseudocode for the data partitions</li>
+<li>The number of replicates performed to obtain the average test errors</li>
+<li>The seed used as the entry point into the random number generator during replication process</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgba1076e" class="outline-2">
+<h2 id="orgba1076e"><span class="section-number-2">6</span> Feature engineering</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orgf731fc3" class="outline-3">
+<h3 id="orgf731fc3"><span class="section-number-3">6.1</span> Feature subset selection</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+Removing features that are not relevant or are redundant, very helpful for high dimensional data. There are three type of feature selection algorithms
+</p>
+</div>
+</div>
+<div id="outline-container-org759b946" class="outline-3">
+<h3 id="org759b946"><span class="section-number-3">6.2</span> The filters which extract features from the data without any learning involved</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+Gene ranking as a popular statistical method, which ranks gene in the dataset by their significance
+</p>
+<ul class="org-ul">
+<li>Unconditional Mixture Modelling (univariate): assume two different states of gene on and off, and checks whether the underlying binary state of gene affects the classification using mixture overlap probability</li>
+<li>Information Gain Ranking (univariate): approximates the conditional distribute P(C|F), where C is the class label and F is the feature vector. Information gain is used as a surrogate for the conditional distribution</li>
+<li>Markov Blanket Filtering (univariete): finds the features that are independent of the class label so that removing them will not affect the accuracy</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd4e4cd1" class="outline-3">
+<h3 id="orgd4e4cd1"><span class="section-number-3">6.3</span> Dealing with missing values</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+Three ways 
+</p>
+<ol class="org-ol">
+<li>Remove the column with missing values, may be used if column contains mostly missing values</li>
+<li>loss of information</li>
+<li>Imputation: replace the missing value with some number. Scikit-learn&rsquo;s imputation library replace values with mean by default.</li>
+<li>a better option most of time</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org5673e18" class="outline-3">
+<h3 id="org5673e18"><span class="section-number-3">6.4</span> Dealing with Categorical data</h3>
+<div class="outline-text-3" id="text-6-4">
+<ul class="org-ul">
+<li>One-Hot Encoding: create new binary columns for each category</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgad36962" class="outline-2">
+<h2 id="orgad36962"><span class="section-number-2">7</span> Visualization of High Dimensional Data</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org9179e32" class="outline-3">
+<h3 id="org9179e32"><span class="section-number-3">7.1</span> TSNE</h3>
+<div class="outline-text-3" id="text-7-1">
+<ul class="org-ul">
+<li>TSNE: converts similarities between data point to join probabilities and tries to minimize the Kullback-Leibler divergence between the joint probabilities of the low-dimensional embedding and the high-dimensional data</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1e0645b" class="outline-2">
+<h2 id="org1e0645b"><span class="section-number-2">8</span> Experiment Design for ML algorithm Evaluation</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+<b><b>Sparse</b></b>: when a feature have most its entries as zeros.
+</p>
+<ul class="org-ul">
+<li>sparse maxtrix: a matrix contains mostly zero values</li>
+<li>dense matrix: a matrix contains mostly non-zero values</li>
+</ul>
+</div>
+<div id="outline-container-orge0fe96e" class="outline-3">
+<h3 id="orge0fe96e"><span class="section-number-3">8.1</span> Why high sparsity is desired in many ML applications?</h3>
+<div class="outline-text-3" id="text-8-1">
+<ol class="org-ol">
+<li>Many real datasets such as texts and Microarray data are represented as very high dimensional vectors</li>
+<li>Most features in high dimensional vectors are usually non-informative or noisy and may serious affect the generalization performance</li>
+<li>A sparse classifier can lead to a simplified decision rule for faster prediction in large-scale problems</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orga88818f" class="outline-3">
+<h3 id="orga88818f"><span class="section-number-3">8.2</span> Performance Matrice</h3>
+<div class="outline-text-3" id="text-8-2">
+<ul class="org-ul">
+<li>accuracy</li>
+<li>AUC: area under ROC curve</li>
+<li>squared loss</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org25b30a6" class="outline-3">
+<h3 id="org25b30a6"><span class="section-number-3">8.3</span> Models that perform well across low-dimension to high-dimension data</h3>
+<div class="outline-text-3" id="text-8-3">
+<ul class="org-ul">
+<li>Random Forest, Neural nets, Boosted Tree, and SVMS</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga4b22b7" class="outline-2">
+<h2 id="orga4b22b7"><span class="section-number-2">9</span> XGBoost</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+XGBoosst is the leading model for working with standard tabular data (eg. in Pandas Dataframe). It requires more knowledge and model tuning. It is an implementation of the gradient boosted decision trees algorithm.
+</p>
+<ul class="org-ul">
+<li>start with a baseline prediction, create cycles that repeatedly builds new models and combines them into an ensemble model</li>
+<li>to make a prediction, we add the predictions from all previous models</li>
+<li>n estimator is key parameter to tune, too small leads to underfitting, and too large leads to overfitting</li>
+<li>early stopping rounds is another parameter can stop the algorithm automatically when model stops improving</li>
+<li>learning rate allows early predictions to have smaller weight, and later ones have a larger weight. So we can use a larger n estimator value with learning rate</li>
+<li>n jobs is a parameter can be set to number of cores to take advantage of parallism</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org29bc632" class="outline-2">
+<h2 id="org29bc632"><span class="section-number-2">10</span> Pipelines</h2>
+<div class="outline-text-2" id="text-10">
+<p>
+A pipeline bundles preprocessing and modeling steps so you can use the whole bundle as if it were a single step. It involves defining the steps of applying transformors to the data, then train the models. Benefits include
+</p>
+<ol class="org-ol">
+<li>cleaner code</li>
+<li>fewer bugs</li>
+<li>easier to productionize</li>
+<li>more options for model testing</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org06bcf68" class="outline-2">
+<h2 id="org06bcf68"><span class="section-number-2">11</span> Cross Validation</h2>
+<div class="outline-text-2" id="text-11">
+<p>
+Provide a more accurate measure of model quality by fold the data into partitions.
+</p>
+<ul class="org-ul">
+<li>lower score means better model quality</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc692fd1" class="outline-2">
+<h2 id="orgc692fd1"><span class="section-number-2">12</span> Data leakage</h2>
+<div class="outline-text-2" id="text-12">
+<p>
+Leakage causes a model to look accurate until making predictions with the model. Any variable that updates after target values is realized can cause data leakage, so they should be excluded from the feature set. 
+</p>
+<ul class="org-ul">
+<li>Data leakage can cause major problem in ML production, need to be careful</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org44a213b" class="outline-2">
+<h2 id="org44a213b"><span class="section-number-2">13</span> General Visualization</h2>
+<div class="outline-text-2" id="text-13">
+</div>
+<div id="outline-container-orgaf40acc" class="outline-3">
+<h3 id="orgaf40acc"><span class="section-number-3">13.1</span> Partial Dependence Plots</h3>
+<div class="outline-text-3" id="text-13-1">
+<p>
+Show how each variable or predictor affects the model&rsquo;s predictions after the model is fitted. Improve the interpretability.   
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7ef7f12" class="outline-2">
+<h2 id="org7ef7f12"><span class="section-number-2">14</span> Debugging and Error Analysis</h2>
+<div class="outline-text-2" id="text-14">
+<p>
+Error analysis is crucial when applying machine learning to real world problems.
+[<a href="http://cs229.stanford.edu/materials/ML-advice.pdf">http://cs229.stanford.edu/materials/ML-advice.pdf</a>]
+</p>
+</div>
+<div id="outline-container-orgd1e85b8" class="outline-3">
+<h3 id="orgd1e85b8"><span class="section-number-3">14.1</span> Debugging learning algorithms</h3>
+<div class="outline-text-3" id="text-14-1">
+</div>
+<div id="outline-container-org633457b" class="outline-4">
+<h4 id="org633457b"><span class="section-number-4">14.1.1</span> high variance or overfitting: if error is low on training but high on testing. Overlearning the training data but no generalizing well</h4>
+<div class="outline-text-4" id="text-14-1-1">
+<ul class="org-ul">
+<li>increase training samples</li>
+<li>a smaller set of features</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4b682ae" class="outline-4">
+<h4 id="org4b682ae"><span class="section-number-4">14.1.2</span> high bias: if error is high on training regardless of training samples. Not enough features to learn the problem</h4>
+<div class="outline-text-4" id="text-14-1-2">
+<ul class="org-ul">
+<li>a larger set of features</li>
+<li>design better features</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8655dc9" class="outline-4">
+<h4 id="org8655dc9"><span class="section-number-4">14.1.3</span> algorithm not converging</h4>
+<div class="outline-text-4" id="text-14-1-3">
+<ul class="org-ul">
+<li>run gradient descent for more iterations</li>
+<li>use Newton&rsquo;s method</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0765e28" class="outline-4">
+<h4 id="org0765e28"><span class="section-number-4">14.1.4</span> Not optimizing the right objective function</h4>
+<div class="outline-text-4" id="text-14-1-4">
+<ul class="org-ul">
+<li>parameter tuning current algorithm</li>
+<li>try another algorithm</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org4b69ce7" class="outline-3">
+<h3 id="org4b69ce7"><span class="section-number-3">14.2</span> Error analysis vs. ablative analysis</h3>
+<div class="outline-text-3" id="text-14-2">
+</div>
+<div id="outline-container-orgc9c1607" class="outline-4">
+<h4 id="orgc9c1607"><span class="section-number-4">14.2.1</span> Error analysis tries to explain the difference between current performance and perfect performance.</h4>
+</div>
+<div id="outline-container-org93c6672" class="outline-4">
+<h4 id="org93c6672"><span class="section-number-4">14.2.2</span> Ablative analysis tries to explain the difference between some baseline performance and current performance. Eg. consider a image recognition algorithm with baseline performance of 94%, and best performance of 99%.</h4>
+</div>
+</div>
+<div id="outline-container-org1419644" class="outline-3">
+<h3 id="org1419644"><span class="section-number-3">14.3</span> Two approaches to ML problems</h3>
+<div class="outline-text-3" id="text-14-3">
+<ol class="org-ol">
+<li>careful design: try to design the right features, dataset and algorithm architecture. 
+<ul class="org-ul">
+<li>pro: maybe more scalable</li>
+<li>con:Be careful with premature optimization</li>
+</ul></li>
+<li>build and fix: implement something quick, then run error analyses to fix its errors. 
+<ul class="org-ul">
+<li>pro: faster to market</li>
+</ul></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf056a2c" class="outline-2">
+<h2 id="orgf056a2c"><span class="section-number-2">15</span> misc</h2>
+<div class="outline-text-2" id="text-15">
+</div>
+<div id="outline-container-org6d3b27c" class="outline-3">
+<h3 id="org6d3b27c"><span class="section-number-3">15.1</span> treatment effect</h3>
+<div class="outline-text-3" id="text-15-1">
+<p>
+The difference between treated and untreated group
+</p>
+</div>
+</div>
+<div id="outline-container-orgba99546" class="outline-3">
+<h3 id="orgba99546"><span class="section-number-3">15.2</span> parameteric</h3>
+<div class="outline-text-3" id="text-15-2">
+<p>
+Assume data is drawn from normal distribution
+</p>
+</div>
+</div>
+<div id="outline-container-orgce415c2" class="outline-3">
+<h3 id="orgce415c2"><span class="section-number-3">15.3</span> non-parameteric</h3>
+<div class="outline-text-3" id="text-15-3">
+<p>
+Does not assume data to have normal distribution
+</p>
+</div>
+</div>
+<div id="outline-container-org8a03530" class="outline-3">
+<h3 id="org8a03530"><span class="section-number-3">15.4</span> unconfoundedness</h3>
+<div class="outline-text-3" id="text-15-4">
+<p>
+An assumption that confounding variables are measured in the dataset  
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1949e27" class="outline-2">
+<h2 id="org1949e27"><span class="section-number-2">16</span> Foundations</h2>
+<div class="outline-text-2" id="text-16">
+</div>
+<div id="outline-container-org719bad3" class="outline-3">
+<h3 id="org719bad3"><span class="section-number-3">16.1</span> Probability Theory</h3>
+<div class="outline-text-3" id="text-16-1">
+</div>
+<div id="outline-container-org3b5b9af" class="outline-4">
+<h4 id="org3b5b9af"><span class="section-number-4">16.1.1</span> Bayesian Probability</h4>
+<div class="outline-text-4" id="text-16-1-1">
+<p>
+An intepretation of the concept of probability. Instead of frequency or propensity of some phenomenon, probability is intepreted as reasonable expectation representing a state of knowledge or as quantification of a personal belief.     
+</p>
+<ul class="org-ul">
+<li>Bayes&rsquo; therom to convert prior probability to posterior probability based on evidences provided by the observed data</li>
+<li>The effect of observed data \(D = {t_1,..., t_n}\) is expressed through conditional probability \(p(D|w)\)</li>
+</ul>
+<p>
+\[
+p ( \mathbf { w } | \mathcal { D } ) = \frac { p ( \mathcal { D } | \mathbf { w } ) p ( \mathbf { w } ) } { p ( \mathcal { D } ) }
+\]
+\(p(D|w)\) is learned from observed data, is called the <b><b>likelihood function</b></b>.
+Given the definition of likelihood. We state Bayes&rsquo; therom as 
+\[
+\text { posterior } \propto \text { likelihood } \times \text { prior }
+\]
+</p>
+<ul class="org-ul">
+<li>negative log of the likelihood function is called an <b><b>error function</b></b>. Because error function is monotonically decreasing, maximizing the likelihhood is equivalent to minimizing the error</li>
+<li>bootstrap: suppose orginal data set consists of N data points at random from X. We create a new dataset \(X_b\) by drawing N points at random from X, with replacement, so some points in X may be replicated in \(X_B\), where other points in X may be absent from \(X_B\). This process is repeated L times to generate L data sets each of size N and each obtained by sampling from the original data set X</li>
+<li>One advantage of the Bayesian viewpoint is that inclusion of prior knowledge arises naturally. Suppose, that a fair-looking coin is tossed three times and lands head each time. A classical maximum likelihood estimate of the probability of landing heads would give 1. By contrast, a Bayesian approach with any reasonable prior will lead to much less extreme conclusion</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd31a870" class="outline-4">
+<h4 id="orgd31a870"><span class="section-number-4">16.1.2</span> The Gaussian distribution</h4>
+<div class="outline-text-4" id="text-16-1-2">
+<p>
+For a single real-valued variable x, the Gaussian distribution is defined by 
+\[
+\mathcal { N } \left( x | \mu , \sigma ^ { 2 } \right) = \frac { 1 } { \left( 2 \pi \sigma ^ { 2 } \right) ^ { 1 / 2 } } \exp \left\{ - \frac { 1 } { 2 \sigma ^ { 2 } } ( x - \mu ) ^ { 2 } \right\}
+\]
+Two key parameters are \(\sigma^2\), the standard deviation and \(\mu\), the mean. The reciprocal of variance is called precision, written as \(\beta = 1 / \sigma ^ { 2 }\) 
+</p>
+</div>
+</div>
+<div id="outline-container-org6035efc" class="outline-4">
+<h4 id="org6035efc"><span class="section-number-4">16.1.3</span> Curve fitting</h4>
+</div>
+</div>
+<div id="outline-container-org41a8235" class="outline-3">
+<h3 id="org41a8235"><span class="section-number-3">16.2</span> Model Selection</h3>
+</div>
+<div id="outline-container-org18a35ea" class="outline-3">
+<h3 id="org18a35ea"><span class="section-number-3">16.3</span> The Curse of Dimensionality</h3>
+</div>
+<div id="outline-container-org32299fa" class="outline-3">
+<h3 id="org32299fa"><span class="section-number-3">16.4</span> Decision Theory</h3>
+</div>
+<div id="outline-container-orgfc91ee0" class="outline-3">
+<h3 id="orgfc91ee0"><span class="section-number-3">16.5</span> Information Theory</h3>
+</div>
+</div>
+<div id="outline-container-orgfe505cf" class="outline-2">
+<h2 id="orgfe505cf"><span class="section-number-2">17</span> Probability Distributions</h2>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Ziwei</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
